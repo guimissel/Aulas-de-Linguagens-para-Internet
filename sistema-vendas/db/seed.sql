@@ -1,3 +1,12 @@
+-- PAPEIS
+INSERT INTO papel (id_papel, nome) VALUES
+	(1, 'admin'),
+	(2, 'cliente');
+
+-- ADMIN
+INSERT INTO usuario (nome, email, senha, id_papel) VALUES
+	('Admin', 'admin@email.com', '$2a$10$8J1KAogXZf99/n.bi0grjuiKYkM3I7oK8pTqOd/Od3QcXakbw1hHa', 1);
+
 -- STATUS
 INSERT INTO status (id_status, nome) VALUES
 	(1, 'Aguardando pagamento'),

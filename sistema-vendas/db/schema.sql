@@ -1,3 +1,5 @@
+SET FOREIGN_KEY_CHECKS = 0;
+
 DROP TABLE IF EXISTS variante_pedido;
 DROP TABLE IF EXISTS pagamento;
 DROP TABLE IF EXISTS pedido;
@@ -9,8 +11,9 @@ DROP TABLE IF EXISTS status;
 DROP TABLE IF EXISTS atributo;
 DROP TABLE IF EXISTS produto;
 DROP TABLE IF EXISTS categoria;
-DROP TABLE IF EXISTS endereco_cliente;
-DROP TABLE IF EXISTS cliente;
+DROP TABLE IF EXISTS endereco_usuario;
+DROP TABLE IF EXISTS usuario;
+DROP TABLE IF EXISTS papel;
 DROP TABLE IF EXISTS forma_pagamento;
 DROP TABLE IF EXISTS endereco;
 
@@ -31,24 +34,34 @@ CREATE TABLE forma_pagamento(
 	ativo boolean DEFAULT TRUE NOT NULL
 );
 
-CREATE TABLE cliente(
-	id_cliente INT AUTO_INCREMENT PRIMARY KEY,
+CREATE TABLE papel(
+	id_papel INT AUTO_INCREMENT PRIMARY KEY,
+	nome VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE usuario(
+	id_usuario INT AUTO_INCREMENT PRIMARY KEY,
 	nome VARCHAR(255) NOT NULL,
 	email VARCHAR(255) UNIQUE NOT NULL,
 	senha VARCHAR(255) NOT NULL,
-	telefone VARCHAR(20)
+	telefone VARCHAR(20),
+	id_papel INT DEFAULT 1 NOT NULL, -- cliente
+
+	FOREIGN KEY (id_papel) REFERENCES papel(id_papel)
+		ON DELETE RESTRICT
+		ON UPDATE CASCADE
 );
 
-CREATE TABLE endereco_cliente(
+CREATE TABLE endereco_usuario(
 	id_endereco INT NOT NULL,
-	id_cliente INT NOT NULL,
+	id_usuario INT NOT NULL,
 	
-	PRIMARY KEY (id_endereco, id_cliente),
+	PRIMARY KEY (id_endereco, id_usuario),
 	
 	FOREIGN KEY (id_endereco) REFERENCES endereco(id_endereco)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE,
-	FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 		ON DELETE CASCADE
 		ON UPDATE CASCADE
 );
@@ -139,10 +152,10 @@ CREATE TABLE pedido(
 	cidade VARCHAR(255),
 	estado CHAR(2) NOT NULL,
 	cep CHAR(8) NOT NULL,
-	id_cliente INT NOT NULL,
+	id_usuario INT NOT NULL,
 	id_status INT DEFAULT 1, -- Aguardando pagamento
 	
-	FOREIGN KEY (id_cliente) REFERENCES cliente(id_cliente)
+	FOREIGN KEY (id_usuario) REFERENCES usuario(id_usuario)
 		ON DELETE RESTRICT
 		ON UPDATE CASCADE,
 	FOREIGN KEY (id_status) REFERENCES status(id_status)
@@ -181,3 +194,5 @@ CREATE TABLE variante_pedido(
 		ON DELETE RESTRICT
 		ON UPDATE CASCADE
 );
+
+SET FOREIGN_KEY_CHECKS = 1;
