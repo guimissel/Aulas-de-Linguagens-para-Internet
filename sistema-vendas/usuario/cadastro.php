@@ -27,7 +27,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $senhaHash = password_hash($senha, PASSWORD_BCRYPT);
 
     try {
-      $sql = "INSERT INTO cliente (nome, email, senha) VALUES (:nome, :email, :senha)";
+      $sql = "INSERT INTO usuario (nome, email, senha) VALUES (:nome, :email, :senha)";
       $stmt = $pdo->prepare($sql);
       $stmt->execute([
         ":nome" => $nome,
@@ -35,7 +35,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ":senha" => $senhaHash
       ]);
 
-      $_SESSION["idCliente"] = $pdo->lastInsertId();
+      $_SESSION["idUsuario"] = $pdo->lastInsertId();
 
       header("Location: /web-2/sistema-vendas/");
       exit;

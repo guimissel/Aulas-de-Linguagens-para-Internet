@@ -1,9 +1,10 @@
 <?php
 session_start();
 
-$_SESSION = array();
+if (estaAutenticado()) {
+  $_SESSION = array();
 
-if (ini_get("session.use_cookies")) {
+  if (ini_get("session.use_cookies")) {
     $params = session_get_cookie_params();
     setcookie(
         session_name(), 
@@ -14,7 +15,9 @@ if (ini_get("session.use_cookies")) {
         $params["secure"], 
         $params["httponly"]
     );
-}
+  }
 
-session_destroy();
+  session_destroy();
+}    
+
 ?>
