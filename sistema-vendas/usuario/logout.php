@@ -1,6 +1,9 @@
 <?php
 session_start();
 
+require_once __DIR__ . "/../helpers/constantes.php";
+require_once __DIR__ . "/../helpers/validacoes.php";
+
 if (estaAutenticado()) {
   $_SESSION = array();
 
@@ -18,6 +21,9 @@ if (estaAutenticado()) {
   }
 
   session_destroy();
+
+  header("Location: " . URL_BASE);
+  exit;
 }    
 
 ?>

@@ -1,9 +1,11 @@
 <?php
 session_start();
+
+require_once __DIR__ . "/helpers/constantes.php";
 require_once __DIR__ . "/helpers/validacoes.php";
 
 if (!estaAutenticado()) {
-  header("Location: /web-2/sistema-vendas/usuario/login.php");
+  header("Location: " . URL_BASE . "/usuario/login.php");
   exit;
 }
 

@@ -2,15 +2,16 @@
 session_start();
 
 require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../helpers/constantes.php";
 require_once __DIR__ . "/../helpers/validacoes.php";
 
 if (!estaAutenticado()) {
-  header("Location: /web-2/sistema-vendas/usuario/login.php");
+  header("Location: " . URL_BASE . "/usuario/login.php");
   exit;
 }
 
 if (!isAdmin()) {
-  header("Location: /web-2/sistema-vendas/views-erros/404.php");
+  header("Location: " . URL_BASE . "/views-erros/404.php");
   exit;
 }
 
@@ -32,6 +33,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
         ":nome" => $nome,
         ":descricao" => empty($descricao) ? null : $descricao
       ]);
+
+      $idProduto = $pdo->lastInsertId();
+
+      header("Location: " . URL_BASE . "/produto/verProduto.php?id=$idProduto");
+      exit;
     } catch (PDOException $e) {
       die("Erro interno: " . $e->getMessage());
     }
