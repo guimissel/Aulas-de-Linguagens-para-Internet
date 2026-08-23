@@ -49,5 +49,7 @@ try {
   <h1><?= htmlspecialchars($produto["nome"]) ?></h1>
   <h2>Descrição</h2>
   <p><?= isset($produto["descricao"]) ? htmlspecialchars($produto["descricao"]) : "O produto não tem descrição" ?></p>
+  <button id="editar">Editar</button>
+  <a href="./excluirProduto.php?id=<?= htmlspecialchars($produto["id_produto"]) ?>">Excluir</a>
 </body>
 </html>

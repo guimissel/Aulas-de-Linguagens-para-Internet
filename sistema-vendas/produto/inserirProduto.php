@@ -41,6 +41,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     } catch (PDOException $e) {
       die("Erro interno: " . $e->getMessage());
     }
+  } else {
+    $_SESSION["erros"] = $erros;
   }
 } else {
   if (!empty($_SESSION["erros"])) {
