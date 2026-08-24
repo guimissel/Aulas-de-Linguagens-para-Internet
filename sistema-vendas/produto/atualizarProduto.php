@@ -2,42 +2,39 @@
 session_start();
 
 require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../helpers/constantes.php";
 
 $pdo = getConexao();
 
 if ($_SERVER["REQUEST_METHOD"] === "POST") {
-  $id = (int) $_POST["id-produto"] ?? null;
+  $id = isset($_POST["id-produto"]) ? (int) $_POST["id-produto"] : null;
   $nome = trim($_POST["nome"] ?? "");
-  $preco = trim($_POST["preco"] ?? "");
-  $ativo = $_POST["ativo"] ?? false;
+  $descricao = trim($_POST["descricao"] ?? "");
+  $ativo = isset($_POST["ativo"]);
 
   $erros = [];
 
   if (!isset($id)) $erros["id"][] = "ID do produto inválido";
 
   $sqlSelect = "SELECT * FROM produto WHERE id_produto = :id";
-  $stmtSelect = $pdo->prepare($sql);
+  $stmtSelect = $pdo->prepare($sqlSelect);
   $stmtSelect->execute([":id" => $id]);
   if (empty($stmtSelect->fetch())) $erros["id"][] = "O produto não existe";
 
   if (empty($nome)) $erros["nome"] = "O nome do produto não pode estar vazio";
-  if (empty($preco)) $erros["preco"][] = "Preço vazio";
-  
-  $preco = str_replace(",", ".", $preco);
-
-  if (filter_var($preco, FILTER_VALIDATE_FLOAT, ["options" => ["min_range" => 0.01]]) === false) {
-    $erros["preco"][] = "Preço deve ser maior que 0.01";
-  }
 
   if (empty($erros)) {
-    $sql = "UPDATE produto SET nome = :nome, preco = :preco, ativo = :ativo WHERE id_produto = :id";
+    $sql = "UPDATE produto SET nome = :nome, descricao = :descricao, ativo = :ativo WHERE id_produto = :id";
     $stmt = $pdo->prepare($sql);
     $stmt->execute([
       ":nome" => $nome,
-      ":preco" => $preco,
+      ":descricao" => $descricao,
       ":ativo" => $ativo,
       ":id" => $id
     ]);
+
+    header("Location: " . URL_BASE . "/produto/verProduto.php?id=$id");
+    exit;
   } else {
     $_SESSION["erros"] = $erros;
   }
