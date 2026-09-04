@@ -1,11 +1,12 @@
 <?php
 session_start();
 
-require_once __DIR__ . '/../config/conexao.php';
+require_once __DIR__ . "/../config/conexao.php";
+require_once __DIR__ . "/../helpers/constantes.php";
 require_once __DIR__ . "/../helpers/validacoes.php";
 
 if (estaAutenticado()) {
-  header("Location: /web-2/sistema-vendas/");
+  header("Location: " . URL_BASE);
   exit;
 }
 
@@ -22,26 +23,32 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
   if (strlen($senha) < 3) $erros["senha"] = "Senha deve ter no mínimo 3 caracteres";
 
   if (empty($erros)) {
-    $sql = "SELECT id_cliente, email, senha FROM cliente WHERE email = :email";
-    $stmt = $pdo->prepare($sql);
-    $stmt->execute([":email" => $email]);
-    $cliente = $stmt->fetch();
+    try {
+      $sql = "SELECT id_usuario, email, senha, id_papel FROM usuario WHERE email = :email";
+      $stmt = $pdo->prepare($sql);
+      $stmt->execute([":email" => $email]);
+      $usuario = $stmt->fetch();
+  
+      if (empty($usuario)) {
+        $erros["naoEncontrado"] = "Email ou senha incorretos";
+      } elseif (!password_verify($senha, $usuario["senha"])) {
+        $erros["naoEncontrado"] = "Email ou senha incorretos";
+      } else {
+        $_SESSION["idUsuario"] = $usuario["id_usuario"];
+        $_SESSION["papel"] = $usuario["id_papel"];
+        
+        header("Location: " . URL_BASE);
+        exit;
+      }
 
-    if (empty($cliente)) {
-      $erros["naoEncontrado"] = "Email ou senha incorretos";
-    } elseif (!password_verify($senha, $cliente["senha"])) {
-      $erros["naoEncontrado"] = "Email ou senha incorretos";
-    } else {
-      $_SESSION["idCliente"] = $cliente["id_cliente"];
-      header("Location: /web-2/sistema-vendas/");
+      $_SESSION["erros"] = $erros;
+      $_SESSION["dadosAntigos"] = ["email" => $email];
+      header("Location: " . $_SERVER["REQUEST_URI"]);
       exit;
+    } catch (PDOException $e) {
+      die("Erro interno: " . $e->getMessage());
     }
   }
-
-  $_SESSION["erros"] = $erros;
-  $_SESSION["dadosAntigos"] = ["email" => $email];
-  header("Location: " . $_SERVER["REQUEST_URI"]);
-  exit;
 } else {
   if (!empty($_SESSION["erros"])) {
     $erros = $_SESSION["erros"];
